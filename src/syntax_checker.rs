@@ -2,6 +2,10 @@
 
 fn internal_syntax_check(ast: &Ast, parent_index: usize) -> Result<(), String> {
     let parent_node = ast.data.get(parent_index).unwrap();
+    
+    if parent_node.sub_assets_indexes.len() == 0 {
+        return Err("Error, loop empty. It creates an infinite loop.".to_string());
+    }
 
     let mut sub_index = 0;
     while sub_index < parent_node.sub_assets_indexes.len() {
