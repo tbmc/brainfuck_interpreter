@@ -44,9 +44,9 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
         sub_indexes = parent_node.sub_assets_indexes.clone();
     }
 
-    let mut sub_index = 0;
-    while sub_index < sub_indexes.len() {
-        let node_index = sub_indexes[sub_index];
+    let mut sub_index = 0i64;
+    while (sub_index as usize) < sub_indexes.len() {
+        let node_index = sub_indexes[sub_index as usize];
         let node = ast.data.get(node_index).unwrap();
 
         if node.is_leaf == false {
