@@ -1,4 +1,4 @@
-﻿++++++++++          Affecte 10 à la case 0
+++++++++++          Affecte 10 à la case 0
 [                   Boucle initiale qui affecte des valeurs utiles au tableau 
     >                avance à la case 1 
     +++++++          affecte 7 à la case 1
