@@ -46,7 +46,10 @@ impl Runtime {
     }
 
     pub fn put_char(&mut self) {
-        println!("{}", self.data[self.ptr as usize])
+        let i64 = self.data[self.ptr as usize];
+        let u8 = i64 as u8;
+        let char = u8 as char;
+        println!("{}, {}, '{}'", i64, u8, char);
     }
 
     pub fn get_char(&mut self) -> Result<(), String> {
