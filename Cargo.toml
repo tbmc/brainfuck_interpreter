@@ -1,5 +1,5 @@
 [package]
-name = "BrainFuckInterpreter"
+name = "brain_fuck_interpreter"
 version = "0.1.0"
 edition = "2021"
 
