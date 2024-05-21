@@ -8,7 +8,7 @@ mod syntax_checker;
 
 fn main() {
     info!("Execute BrainFuck script!");
-    let result = interpret_script_file("brain_fuck/read_print.bf");
+    let result = interpret_script_file("brain_fuck_scripts/prime_2.bf");
     match result {
         Ok(_) => {
             info!("Success!");
