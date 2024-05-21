@@ -1,5 +1,4 @@
-﻿use std::io::{Read};
-use std::io;
+﻿use std::io;
 
 const ARRAY_SIZE: usize = 30_000;
 
@@ -7,6 +6,9 @@ pub struct Runtime {
     pub(crate) ptr: i32,
     pub(crate) data: [i64; ARRAY_SIZE],
     pub(crate) max_ptr: usize,
+
+    pub(crate) read_buffer: Vec<u8>,
+    pub(crate) read_cursor: usize,
 }
 
 
@@ -16,6 +18,8 @@ impl<'a> Runtime {
             ptr: 0,
             data: [0; ARRAY_SIZE],
             max_ptr: 0,
+            read_buffer: Vec::new(),
+            read_cursor: 1,
         };
     }
 
@@ -58,20 +62,23 @@ impl<'a> Runtime {
     }
 
     pub fn get_char(&mut self) -> Result<(), String> {
-        let mut buffer = [0; 1];
-        let read_result = io::stdin().read(&mut buffer);
-        return match read_result {
-            Err(e) => {
-                Err(e.to_string())
+        if self.read_cursor > self.read_buffer.len() {
+            let mut buffer = String::new();
+            let result = io::stdin().read_line(&mut buffer);
+            if result.is_err() {
+                return Err(result.err().unwrap().to_string());
             }
-            Ok(red) => {
-                if red == 0 {
-                    return Err("Not enough bytes in stdin red".to_string());
-                }
-                self.data[self.ptr as usize] = buffer[0] as i64;
-                Ok(())
-            }
-        };
+            let mut vec = buffer.as_bytes().to_vec();
+            vec.push(0);
+            self.read_buffer = vec;
+            self.read_cursor = 0;
+        }
+        
+        let char = self.read_buffer[self.read_cursor];
+        self.read_cursor += 1;
+        self.data[self.ptr as usize] = char as i64;
+        
+        return Ok(());
     }
 
     pub fn jump_to_next_bracket(&mut self) -> bool {
