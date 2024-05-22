@@ -13,12 +13,13 @@ pub struct Runtime<'a> {
     pub(crate) read_buffer: Vec<u8>,
     pub(crate) read_cursor: usize,
 
+    pub(crate) stdin: Box<&'a mut dyn BufRead>,
     pub(crate) stdout: Box<&'a mut dyn Write>,
 }
 
 
 impl<'a> Runtime<'a> {
-    pub fn new(stdout: Box<&'a mut dyn Write>) -> Self {
+    pub fn new(stdin: Box<&'a mut dyn BufRead>, stdout: Box<&'a mut dyn Write>) -> Self {
         return Runtime {
             ptr: 0,
             data: [0; ARRAY_SIZE],
@@ -27,6 +28,7 @@ impl<'a> Runtime<'a> {
 
             read_buffer: Vec::new(),
             read_cursor: 1,
+            stdin,
             stdout,
         };
     }
@@ -100,7 +102,8 @@ impl<'a> Runtime<'a> {
     pub fn get_char(&mut self) -> Result<(), String> {
         if self.read_cursor > self.read_buffer.len() {
             let mut buffer = String::new();
-            let result = io::stdin().read_line(&mut buffer);
+            
+            let result = self.stdin.read_line(&mut buffer);
             if result.is_err() {
                 return Err(result.err().unwrap().to_string());
             }
@@ -138,8 +141,9 @@ mod tests {
 
     #[test]
     fn increment_value() {
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -155,8 +159,9 @@ mod tests {
 
     #[test]
     fn increment_decrement_value() {
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -178,8 +183,9 @@ mod tests {
 
     #[test]
     fn all_without_put_get() {
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
 
         runtime.increment_value();
         runtime.increment_value();

@@ -23,8 +23,9 @@ pub fn interpret_code(script: &str) -> Result<(), String> {
     }
     info!("Syntax check ok.");
 
+    let stdin = &mut io::stdin().lock();
     let stdout = &mut io::stdout();
-    let runtime = &mut Runtime::new(Box::new(stdout));
+    let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
     info!("Program output:");
     let result = execute_code(runtime, ast, 0);
 
@@ -133,8 +134,9 @@ mod tests {
         let parsed = parse_code(code);
         let ast = &parsed.unwrap();
 
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         let result = execute_code(runtime, ast, 0);
 
         assert!(result.is_ok());
@@ -148,8 +150,9 @@ mod tests {
         let parsed = parse_code(code);
         let ast = &parsed.unwrap();
 
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         let result = execute_code(runtime, ast, 0);
 
         assert!(result.is_ok());
@@ -163,8 +166,9 @@ mod tests {
         let parsed = parse_code(code);
         let ast = &parsed.unwrap();
 
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         let result = execute_code(runtime, ast, 0);
         assert!(result.is_ok());
         assert_eq!(0, runtime.ptr);
@@ -177,8 +181,9 @@ mod tests {
         let parsed = parse_code(code);
         let ast = &parsed.unwrap();
 
+        let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
         runtime.data[0] = 2;
         let result = execute_code(runtime, ast, 1);
         assert!(result.is_ok());
@@ -188,7 +193,7 @@ mod tests {
 
 #[cfg(test)]
 mod test_script_output {
-    use std::fs;
+    use std::{fs, io};
     use log::LevelFilter;
     use crate::abstract_syntax_tree::parse_code;
     use crate::interpreter::execute_code;
@@ -217,12 +222,44 @@ mod test_script_output {
         execute_code(runtime, ast, 0).unwrap();
     }
 
+
+    #[test]
+    fn test_copy() {
+        init();
+
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let script_path = format!("{}/test/copy.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+
+        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        assert_eq!(str, "@");
+    }
+
+    #[test]
+    fn test_inside_loop() {
+        init();
+
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let script_path = format!("{}/test/inside_loop.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+
+        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        assert_eq!(str, "@");
+    }
+
     #[test]
     fn test_hello_world() {
         init();
 
+        let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
         let script_path = format!("{}/hello_world.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
@@ -235,8 +272,9 @@ mod test_script_output {
     fn test_cell_size() {
         init();
 
+        let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
         let script_path = format!("{}/cell_size.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
@@ -246,11 +284,12 @@ mod test_script_output {
     }
 
     #[test]
-    fn fibonacci() {
+    fn test_fibonacci() {
         init();
 
+        let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
         let script_path = format!("{}/fibonacci.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
@@ -258,19 +297,19 @@ mod test_script_output {
         let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
         assert_eq!(str, "1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89");
     }
-    
-    #[test]
-    fn test_copy() {
-        init();
 
+    #[test]
+    fn test_read_print() {
+        init();
+        
+        let stdin = &mut io::Cursor::new(b"This is a test!\n");
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(&mut stdout));
-        let script_path = format!("{}/test/copy.bf", SCRIPT_FOLDER);
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let script_path = format!("{}/test/read_print.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
         let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
-        assert_eq!(str, "@");
+        assert_eq!(str, "This is a test");
     }
 }
-
