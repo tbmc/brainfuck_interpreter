@@ -4,7 +4,7 @@ const ARRAY_SIZE: usize = 30_000;
 
 type BoxType = u8;
 
-pub struct Runtime {
+pub struct Runtime<'a> {
     pub(crate) ptr: i32,
     pub(crate) data: [BoxType; ARRAY_SIZE],
     pub(crate) max_ptr: usize,
@@ -12,11 +12,13 @@ pub struct Runtime {
 
     pub(crate) read_buffer: Vec<u8>,
     pub(crate) read_cursor: usize,
+
+    pub(crate) stdout: Box<&'a mut dyn Write>,
 }
 
 
-impl<'a> Runtime {
-    pub fn new() -> Self {
+impl<'a> Runtime<'a> {
+    pub fn new(stdout: Box<&'a mut dyn Write>) -> Self {
         return Runtime {
             ptr: 0,
             data: [0; ARRAY_SIZE],
@@ -25,6 +27,7 @@ impl<'a> Runtime {
 
             read_buffer: Vec::new(),
             read_cursor: 1,
+            stdout,
         };
     }
 
@@ -88,8 +91,9 @@ impl<'a> Runtime {
     }
 
     pub fn put_char(&mut self) {
-        print!("{}", self.data[self.ptr as usize] as u8 as char);
-        io::stdout().flush().unwrap();
+        let char = self.data[self.ptr as usize] as char;
+        write!(&mut self.stdout, "{}", char).unwrap();
+        self.stdout.flush().unwrap();
         self.increment_instruction_counter();
     }
 
@@ -129,11 +133,13 @@ impl<'a> Runtime {
 
 #[cfg(test)]
 mod tests {
+    use std::io;
     use crate::runtime::Runtime;
 
     #[test]
     fn increment_value() {
-        let runtime = &mut Runtime::new();
+        let stdout = &mut io::stdout();
+        let runtime = &mut Runtime::new(Box::new(stdout));
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -149,7 +155,8 @@ mod tests {
 
     #[test]
     fn increment_decrement_value() {
-        let runtime = &mut Runtime::new();
+        let stdout = &mut io::stdout();
+        let runtime = &mut Runtime::new(Box::new(stdout));
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -166,12 +173,13 @@ mod tests {
         runtime.decrement_value();
 
         assert_eq!(2, runtime.ptr);
-        assert_eq!([2, 1, -1], runtime.data[0..runtime.max_ptr + 1]);
+        assert_eq!([2, 1, 255], runtime.data[0..runtime.max_ptr + 1]);
     }
 
     #[test]
     fn all_without_put_get() {
-        let runtime = &mut Runtime::new();
+        let stdout = &mut io::stdout();
+        let runtime = &mut Runtime::new(Box::new(stdout));
 
         runtime.increment_value();
         runtime.increment_value();
@@ -217,6 +225,6 @@ mod tests {
         assert!(runtime.decrement_ptr().is_ok());
 
         assert_eq!(1, runtime.ptr);
-        assert_eq!([2, -1, -2, 4], runtime.data[0..runtime.max_ptr + 1]);
+        assert_eq!([2, 255, 254, 4], runtime.data[0..runtime.max_ptr + 1]);
     }
 }
