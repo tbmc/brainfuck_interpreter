@@ -1,10 +1,13 @@
 use log::{info, LevelFilter};
+use crate::consts::SCRIPT_FOLDER;
 use crate::interpreter::interpret_script_file;
 
 mod interpreter;
 mod runtime;
 mod abstract_syntax_tree;
 mod syntax_checker;
+mod consts;
+
 
 fn main() {
     env_logger::Builder::new().filter_level(LevelFilter::Info).init();
