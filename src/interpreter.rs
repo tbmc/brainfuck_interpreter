@@ -312,4 +312,19 @@ mod test_scripts {
         let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
         assert_eq!(str, "This is a test!\n");
     }
+    
+    #[test]
+    fn test_prime_1() {
+        init();
+        
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let script_path = format!("{}/prime.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+
+        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        assert_eq!(str, "29, 23, 19, 17, 13, 11, 7, 5, 3, 2, 1, ");
+    }
 }
