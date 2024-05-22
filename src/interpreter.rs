@@ -192,7 +192,7 @@ mod tests {
 }
 
 #[cfg(test)]
-mod test_script_output {
+mod test_scripts {
     use std::{fs, io};
     use log::LevelFilter;
     use crate::abstract_syntax_tree::parse_code;
@@ -310,6 +310,6 @@ mod test_script_output {
         execute_code_for_test(runtime, script_path.as_str());
 
         let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
-        assert_eq!(str, "This is a test");
+        assert_eq!(str, "This is a test!\n");
     }
 }
