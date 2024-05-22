@@ -2,10 +2,13 @@
 
 const ARRAY_SIZE: usize = 30_000;
 
+type BoxType = u8;
+
 pub struct Runtime {
     pub(crate) ptr: i32,
-    pub(crate) data: [i64; ARRAY_SIZE],
+    pub(crate) data: [BoxType; ARRAY_SIZE],
     pub(crate) max_ptr: usize,
+    pub(crate) instruction_counter: usize,
 
     pub(crate) read_buffer: Vec<u8>,
     pub(crate) read_cursor: usize,
@@ -18,14 +21,36 @@ impl<'a> Runtime {
             ptr: 0,
             data: [0; ARRAY_SIZE],
             max_ptr: 0,
+            instruction_counter: 0,
+
             read_buffer: Vec::new(),
             read_cursor: 1,
         };
     }
 
-    // pub fn slice(self) -> &'a [i64] {
-    //     return &(self.data[0..self.max_ptr]);
-    // }
+    pub fn extract_data(&self) -> Vec<BoxType> {
+        let mut vec = Vec::with_capacity(self.max_ptr + 1);
+        for i in 0..self.max_ptr {
+            vec.push(self.data[i]);
+        }
+        return vec;
+    }
+
+    pub fn dump_data(&self, exit: bool) {
+        let data: String = self.extract_data().iter().map(|x| format!("{}, ", x)).collect();
+        println!("Data:\nCurrent pointer: {}\n{}\n", self.ptr, data);
+        if exit {
+            std::process::exit(0);
+        }
+    }
+
+    fn increment_instruction_counter(&mut self) {
+        self.instruction_counter += 1;
+
+        // if self.instruction_counter > 50_000 {
+        //     self.dump_data(true);
+        // }
+    }
 
     pub fn increment_ptr(&mut self) -> Result<(), String> {
         self.ptr += 1;
@@ -38,6 +63,7 @@ impl<'a> Runtime {
             self.max_ptr = self.ptr as usize;
         }
 
+        self.increment_instruction_counter();
         return Ok(());
     }
 
@@ -46,19 +72,25 @@ impl<'a> Runtime {
         if self.ptr < 0 {
             return Err("There is a buffer underflow".to_string());
         }
+
+        self.increment_instruction_counter();
         return Ok(());
     }
 
     pub fn increment_value(&mut self) {
-        self.data[self.ptr as usize] += 1;
+        self.data[self.ptr as usize] = self.data[self.ptr as usize].wrapping_add(1);
+        self.increment_instruction_counter();
     }
 
     pub fn decrement_value(&mut self) {
-        self.data[self.ptr as usize] -= 1;
+        self.data[self.ptr as usize] = self.data[self.ptr as usize].wrapping_sub(1);
+        self.increment_instruction_counter();
     }
 
     pub fn put_char(&mut self) {
         print!("{}", self.data[self.ptr as usize] as u8 as char);
+        io::stdout().flush().unwrap();
+        self.increment_instruction_counter();
     }
 
     pub fn get_char(&mut self) -> Result<(), String> {
@@ -73,20 +105,23 @@ impl<'a> Runtime {
             self.read_buffer = vec;
             self.read_cursor = 0;
         }
-        
+
         let char = self.read_buffer[self.read_cursor];
         self.read_cursor += 1;
-        self.data[self.ptr as usize] = char as i64;
-        
+        self.data[self.ptr as usize] = char as BoxType;
+
+        self.increment_instruction_counter();
         return Ok(());
     }
 
     pub fn jump_to_next_bracket(&mut self) -> bool {
+        self.increment_instruction_counter();
         let current_value = self.data[self.ptr as usize];
         return current_value == 0;
     }
 
     pub fn jump_to_previous_bracket(&mut self) -> bool {
+        self.increment_instruction_counter();
         let current_value = self.data[self.ptr as usize];
         return current_value != 0;
     }

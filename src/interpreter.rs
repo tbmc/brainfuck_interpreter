@@ -134,12 +134,12 @@ mod tests {
 
         let runtime = &mut Runtime::new();
         let result = execute_code(runtime, ast, 0);
-        
+
         assert!(result.is_ok());
         assert_eq!(1, runtime.ptr);
         assert_eq!([3, 1], &runtime.data[0..2]);
     }
-    
+
     #[test]
     fn test_simple_operators_2_minus2_1() {
         let code = "+++ > -- < - >> +";
@@ -148,12 +148,12 @@ mod tests {
 
         let runtime = &mut Runtime::new();
         let result = execute_code(runtime, ast, 0);
-        
+
         assert!(result.is_ok());
         assert_eq!(2, runtime.ptr);
         assert_eq!([2, -2, 1], &runtime.data[0..3]);
     }
-    
+
     #[test]
     fn test_simple_loop() {
         let code = "+++[-]+";
