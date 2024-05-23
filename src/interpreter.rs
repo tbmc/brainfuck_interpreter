@@ -1,5 +1,5 @@
-﻿use std::fs;
-use log::{debug, info};
+﻿use std::{fs, io};
+use log::{info, trace};
 use crate::abstract_syntax_tree::{Ast, parse_code};
 use crate::runtime::Runtime;
 use crate::syntax_checker::syntax_check;
@@ -54,7 +54,7 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
         if !node.is_leaf {
             // Branch opening
             if runtime.jump_to_next_bracket() {
-                debug!("Jump to next");
+                trace!("Jump to next");
                 sub_index += 1;
             } else {
                 // Execute inner loop
@@ -67,14 +67,15 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
             // Branch closing
             if runtime.jump_to_previous_bracket() {
                 // Go back to start of loop
-                debug!("Jump to previous");
+                trace!("Jump to previous");
                 sub_index -= 2;
             } else {
                 // Do nothing
-                debug!("Do not jump to previous");
+                trace!("Do not jump to previous");
             }
         } else {
             // Leaf
+            // trace!("Execute leaf {}", node.char);
             let result = execute_leaf(runtime, ast, node_index);
             if result.is_err() {
                 return Err(result.err().unwrap());

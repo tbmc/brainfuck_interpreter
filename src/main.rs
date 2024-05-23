@@ -10,7 +10,7 @@ mod consts;
 
 
 fn main() {
-    env_logger::Builder::new().filter_level(LevelFilter::Info).init();
+    env_logger::Builder::new().filter_level(LevelFilter::Warn).init();
 
     info!("Execute BrainFuck script!");
     let result = interpret_script_file(format!("{}/prime_2.bf", SCRIPT_FOLDER).as_str());
