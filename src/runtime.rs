@@ -13,14 +13,14 @@ pub struct Runtime<'a> {
     pub(crate) read_buffer: Vec<u8>,
     pub(crate) read_cursor: usize,
 
-    pub(crate) stdin: Box<&'a mut dyn BufRead>,
-    pub(crate) stdout: Box<&'a mut dyn Write>,
+    pub(crate) stdin: &'a mut dyn BufRead,
+    pub(crate) stdout: &'a mut dyn Write,
 }
 
 
 impl<'a> Runtime<'a> {
-    pub fn new(stdin: Box<&'a mut dyn BufRead>, stdout: Box<&'a mut dyn Write>) -> Self {
-        return Runtime {
+    pub fn new(stdin: &'a mut dyn BufRead, stdout: &'a mut dyn Write) -> Self {
+        Runtime {
             ptr: 0,
             data: [0; ARRAY_SIZE],
             max_ptr: 0,
@@ -30,7 +30,7 @@ impl<'a> Runtime<'a> {
             read_cursor: 1,
             stdin,
             stdout,
-        };
+        }
     }
 
     pub fn extract_data(&self) -> Vec<BoxType> {
@@ -38,11 +38,11 @@ impl<'a> Runtime<'a> {
         for i in 0..self.max_ptr {
             vec.push(self.data[i]);
         }
-        return vec;
+        vec
     }
 
     pub fn dump_data(&self, exit: bool) {
-        let data: String = self.extract_data().iter().map(|x| format!("{}, ", x)).collect();
+        let data: String = self.extract_data().iter().map(|x| format!("{} ", x)).collect();
         println!("Data:\nCurrent pointer: {}\n{}\n", self.ptr, data);
         if exit {
             std::process::exit(0);
@@ -69,7 +69,7 @@ impl<'a> Runtime<'a> {
         }
 
         self.increment_instruction_counter();
-        return Ok(());
+        Ok(())
     }
 
     pub fn decrement_ptr(&mut self) -> Result<(), String> {
@@ -79,7 +79,7 @@ impl<'a> Runtime<'a> {
         }
 
         self.increment_instruction_counter();
-        return Ok(());
+        Ok(())
     }
 
     pub fn increment_value(&mut self) {
@@ -118,19 +118,19 @@ impl<'a> Runtime<'a> {
         self.data[self.ptr as usize] = char as BoxType;
 
         self.increment_instruction_counter();
-        return Ok(());
+        Ok(())
     }
 
     pub fn jump_to_next_bracket(&mut self) -> bool {
         self.increment_instruction_counter();
         let current_value = self.data[self.ptr as usize];
-        return current_value == 0;
+        current_value == 0
     }
 
     pub fn jump_to_previous_bracket(&mut self) -> bool {
         self.increment_instruction_counter();
         let current_value = self.data[self.ptr as usize];
-        return current_value != 0;
+        current_value != 0
     }
 }
 
@@ -143,7 +143,7 @@ mod tests {
     fn increment_value() {
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout);
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -161,7 +161,7 @@ mod tests {
     fn increment_decrement_value() {
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout);
         runtime.increment_value();
         runtime.increment_value();
         runtime.increment_value();
@@ -185,7 +185,7 @@ mod tests {
     fn all_without_put_get() {
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout);
 
         runtime.increment_value();
         runtime.increment_value();

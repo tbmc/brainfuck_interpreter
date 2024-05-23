@@ -24,7 +24,7 @@ impl Ast {
         };
         ast.data.push(root);
 
-        return ast;
+        ast
     }
 
     pub fn add_new_leaf(&mut self, value: char, parent_index: usize, index_in_string: usize) -> usize {
@@ -112,5 +112,5 @@ pub fn parse_code(code: &str) -> Result<Ast, String> {
         }
     }
 
-    return Ok(ast);
+    Ok(ast)
 }

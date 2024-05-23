@@ -25,7 +25,7 @@ pub fn interpret_code(script: &str) -> Result<(), String> {
 
     let stdin = &mut io::stdin().lock();
     let stdout = &mut io::stdout();
-    let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+    let runtime = &mut Runtime::new(stdin, stdout);
     info!("Program output:");
     let result = execute_code(runtime, ast, 0);
 
@@ -51,7 +51,7 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
         let node_index = sub_indexes[sub_index as usize];
         let node = ast.data.get(node_index).unwrap();
 
-        if node.is_leaf == false {
+        if !node.is_leaf {
             // Branch opening
             if runtime.jump_to_next_bracket() {
                 debug!("Jump to next");
@@ -121,11 +121,12 @@ fn execute_leaf(runtime: &mut Runtime, ast: &Ast, index: usize) -> Result<(), St
             // Char is a comment, so it is ignored
         }
     }
-    return Ok(());
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write;
     use super::*;
 
     #[test]
@@ -136,7 +137,7 @@ mod tests {
 
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout as &mut dyn Write);
         let result = execute_code(runtime, ast, 0);
 
         assert!(result.is_ok());
@@ -152,7 +153,7 @@ mod tests {
 
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout as &mut dyn Write);
         let result = execute_code(runtime, ast, 0);
 
         assert!(result.is_ok());
@@ -168,7 +169,7 @@ mod tests {
 
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout as &mut dyn Write);
         let result = execute_code(runtime, ast, 0);
         assert!(result.is_ok());
         assert_eq!(0, runtime.ptr);
@@ -183,7 +184,7 @@ mod tests {
 
         let stdin = &mut io::stdin().lock();
         let stdout = &mut io::stdout();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(stdout));
+        let runtime = &mut Runtime::new(stdin, stdout as &mut dyn Write);
         runtime.data[0] = 2;
         let result = execute_code(runtime, ast, 1);
         assert!(result.is_ok());
@@ -194,6 +195,7 @@ mod tests {
 #[cfg(test)]
 mod test_scripts {
     use std::{fs, io};
+    use std::io::Write;
     use log::LevelFilter;
     use crate::abstract_syntax_tree::parse_code;
     use crate::interpreter::execute_code;
@@ -229,12 +231,12 @@ mod test_scripts {
 
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/test/copy.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "@");
     }
 
@@ -244,12 +246,12 @@ mod test_scripts {
 
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/test/inside_loop.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "@");
     }
 
@@ -259,12 +261,12 @@ mod test_scripts {
 
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/hello_world.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "Hello World!\n");
     }
 
@@ -274,12 +276,12 @@ mod test_scripts {
 
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/cell_size.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "8 bit cells\n");
     }
 
@@ -289,12 +291,12 @@ mod test_scripts {
 
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/fibonacci.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89");
     }
 
@@ -304,27 +306,27 @@ mod test_scripts {
         
         let stdin = &mut io::Cursor::new(b"This is a test!\n");
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/test/read_print.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "This is a test!\n");
     }
-    
+
     #[test]
     fn test_prime_1() {
         init();
-        
+
         let stdin = &mut io::stdin().lock();
         let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(Box::new(stdin), Box::new(&mut stdout));
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
         let script_path = format!("{}/prime.bf", SCRIPT_FOLDER);
 
         execute_code_for_test(runtime, script_path.as_str());
 
-        let str = stdout.iter().map(|x| x.clone() as char).collect::<String>();
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "29, 23, 19, 17, 13, 11, 7, 5, 3, 2, 1, ");
     }
 }
