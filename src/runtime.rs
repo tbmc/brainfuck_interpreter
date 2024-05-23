@@ -52,9 +52,10 @@ impl<'a> Runtime<'a> {
     fn increment_instruction_counter(&mut self) {
         self.instruction_counter += 1;
 
-        // if self.instruction_counter > 50_000 {
-        //     self.dump_data(true);
-        // }
+        if self.instruction_counter > MAX_INSTRUCTIONS {
+            self.dump_data(true);
+            panic!("May be there is an infinite loop. Max of {} instructions exceeded.", MAX_INSTRUCTIONS);
+        }
     }
 
     pub fn increment_ptr(&mut self) -> Result<(), String> {
