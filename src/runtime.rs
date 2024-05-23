@@ -108,7 +108,7 @@ impl<'a> Runtime<'a> {
             if result.is_err() {
                 return Err(result.err().unwrap().to_string());
             }
-            buffer = buffer.replace("\r", "");
+            buffer = buffer.replace('\r', "");
             let mut vec = buffer.as_bytes().to_vec();
             vec.push(0);
             self.read_buffer = vec;

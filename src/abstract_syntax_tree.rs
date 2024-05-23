@@ -78,13 +78,13 @@ impl Ast {
 
 impl AstNode {
     pub fn new(value: char, parent_index: usize, is_leaf: bool, index_in_string: usize) -> Self {
-        return AstNode {
+        AstNode {
             char: value,
             sub_assets_indexes: Vec::new(),
             parent_index: Some(parent_index),
             is_leaf,
             index_in_string,
-        };
+        }
     }
 }
 
