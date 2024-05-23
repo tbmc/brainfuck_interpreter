@@ -1,5 +1,6 @@
-﻿use std::io;
+﻿use std::io::{BufRead, Write};
 
+const MAX_INSTRUCTIONS: usize = 100_000_000;
 const ARRAY_SIZE: usize = 30_000;
 
 type BoxType = u8;
@@ -101,13 +102,13 @@ impl<'a> Runtime<'a> {
     }
 
     pub fn get_char(&mut self) -> Result<(), String> {
-        if self.read_cursor > self.read_buffer.len() {
+        if self.read_cursor >= self.read_buffer.len() {
             let mut buffer = String::new();
-            
             let result = self.stdin.read_line(&mut buffer);
             if result.is_err() {
                 return Err(result.err().unwrap().to_string());
             }
+            buffer = buffer.replace("\r", "");
             let mut vec = buffer.as_bytes().to_vec();
             vec.push(0);
             self.read_buffer = vec;

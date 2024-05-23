@@ -303,7 +303,7 @@ mod test_scripts {
     #[test]
     fn test_read_print() {
         init();
-        
+
         let stdin = &mut io::Cursor::new(b"This is a test!\n");
         let mut stdout: Vec<u8> = Vec::new();
         let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
@@ -328,5 +328,35 @@ mod test_scripts {
 
         let str = stdout.iter().map(|x| *x as char).collect::<String>();
         assert_eq!(str, "29, 23, 19, 17, 13, 11, 7, 5, 3, 2, 1, ");
+    }
+
+    #[test]
+    fn test_prime_2() {
+        init();
+
+        let stdin = &mut io::Cursor::new(b"50\n");
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
+        let script_path = format!("{}/prime_2.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
+        assert_eq!(str, "Primes up to: 2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 \n");
+    }
+
+    #[test]
+    fn test_prime_2_20() {
+        init();
+
+        let stdin = &mut io::Cursor::new(b"20\n");
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
+        let script_path = format!("{}/prime_2.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+
+        let str = stdout.iter().map(|x| *x as char).collect::<String>();
+        assert_eq!(str, "Primes up to: 2 3 5 7 11 13 17 19 \n");
     }
 }
