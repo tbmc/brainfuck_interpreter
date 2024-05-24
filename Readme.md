@@ -1,3 +1,3 @@
 ﻿# Brain Fuck Interpreter
 
-It mostly works, but there is edge case on both prime scripts that don't work.
+What is [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck)?
