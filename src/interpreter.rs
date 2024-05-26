@@ -10,17 +10,10 @@ pub fn interpret_script_file(filename: &str) -> Result<(), String> {
 }
 
 pub fn interpret_code(script: &str) -> Result<(), String> {
-    let parsed = parse_code(script);
-    if parsed.is_err() {
-        return Err(parsed.err().unwrap());
-    }
-    let ast = &parsed.unwrap();
+    let ast = &parse_code(script)?;
     info!("Parsed ok.");
 
-    let checked = syntax_check(ast);
-    if checked.is_err() {
-        return Err(checked.err().unwrap());
-    }
+    syntax_check(ast)?;
     info!("Syntax check ok.");
 
     let stdin = &mut io::stdin().lock();
@@ -58,10 +51,7 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
                 sub_index += 1;
             } else {
                 // Execute inner loop
-                let result = execute_code(runtime, ast, node_index);
-                if result.is_err() {
-                    return Err(result.err().unwrap());
-                }
+                execute_code(runtime, ast, node_index)?;
             }
         } else if node.char == ']' {
             // Branch closing
@@ -76,10 +66,7 @@ fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result
         } else {
             // Leaf
             // trace!("Execute leaf {}", node.char);
-            let result = execute_leaf(runtime, ast, node_index);
-            if result.is_err() {
-                return Err(result.err().unwrap());
-            }
+            execute_leaf(runtime, ast, node_index)?;
         }
 
         sub_index += 1;
@@ -92,16 +79,10 @@ fn execute_leaf(runtime: &mut Runtime, ast: &Ast, index: usize) -> Result<(), St
     let node = ast.data.get(index).unwrap();
     match node.char {
         '>' => {
-            let result = runtime.increment_ptr();
-            if result.is_err() {
-                return Err(result.err().unwrap());
-            }
+            runtime.increment_ptr()?;
         }
         '<' => {
-            let result = runtime.decrement_ptr();
-            if result.is_err() {
-                return Err(result.err().unwrap());
-            }
+            runtime.decrement_ptr()?;
         }
         '+' => {
             runtime.increment_value();
@@ -113,10 +94,7 @@ fn execute_leaf(runtime: &mut Runtime, ast: &Ast, index: usize) -> Result<(), St
             runtime.put_char();
         }
         ',' => {
-            let result = runtime.get_char();
-            if result.is_err() {
-                return Err(result.err().unwrap());
-            }
+            runtime.get_char()?;
         }
         _ => {
             // Char is a comment, so it is ignored
