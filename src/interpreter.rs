@@ -10,16 +10,22 @@ pub fn interpret_script_file(filename: &str) -> Result<(), String> {
 }
 
 pub fn interpret_code(script: &str) -> Result<(), String> {
+    let stdin = &mut io::stdin().lock();
+    let stdout = &mut io::stdout();
+    let runtime = &mut Runtime::new(stdin, stdout);
+
+    return interpret_code_custom_runtime(script, runtime);
+}
+
+pub fn interpret_code_custom_runtime<'a>(script: &str, runtime: &mut Runtime) -> Result<(), String> {
     let ast = &parse_code(script)?;
     info!("Parsed ok.");
 
     syntax_check(ast)?;
     info!("Syntax check ok.");
 
-    let stdin = &mut io::stdin().lock();
-    let stdout = &mut io::stdout();
-    let runtime = &mut Runtime::new(stdin, stdout);
-    info!("Program output:");
+
+    info!("Program output:\n");
     let result = execute_code(runtime, ast, 0);
 
     match result {
@@ -31,6 +37,7 @@ pub fn interpret_code(script: &str) -> Result<(), String> {
         }
     }
 }
+
 
 fn execute_code(runtime: &mut Runtime, ast: &Ast, parent_index: usize) -> Result<(), String> {
     let sub_indexes: Vec<usize>;
@@ -176,11 +183,9 @@ mod test_scripts {
     use std::{fs, io};
     use std::io::Write;
     use log::LevelFilter;
-    use crate::abstract_syntax_tree::parse_code;
-    use crate::interpreter::execute_code;
+    use crate::interpreter::interpret_code_custom_runtime;
     use crate::runtime::Runtime;
     use crate::SCRIPT_FOLDER;
-    use crate::syntax_checker::syntax_check;
 
     static mut ALREADY_INITIALIZED: bool = false;
 
@@ -198,11 +203,34 @@ mod test_scripts {
 
     fn execute_code_for_test(runtime: &mut Runtime, script_path: &str) {
         let file_content = fs::read_to_string(script_path).unwrap();
-        let ast = &(parse_code(file_content.as_str()).unwrap());
-        syntax_check(ast).unwrap();
-        execute_code(runtime, ast, 0).unwrap();
+        interpret_code_custom_runtime(file_content.as_str(), runtime).unwrap();
     }
 
+    #[test]
+    fn test_no_instruction() {
+        init();
+        
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
+        
+        let code = "test";
+        interpret_code_custom_runtime(code, runtime).unwrap();
+    }
+    
+    #[test]
+    fn test_no_loop() {
+        init();
+
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
+        let script_path = format!("{}/test/no_loop.bf", SCRIPT_FOLDER);
+
+        execute_code_for_test(runtime, script_path.as_str());
+        assert_eq!(253, runtime.data[0]);
+        assert_eq!(1, runtime.data[1]);
+    }
 
     #[test]
     fn test_copy() {

@@ -1,3 +1,5 @@
+use std::env;
+use std::path::Path;
 use log::{info, LevelFilter};
 use crate::consts::SCRIPT_FOLDER;
 use crate::interpreter::interpret_script_file;
@@ -10,10 +12,19 @@ mod consts;
 
 
 fn main() {
-    env_logger::Builder::new().filter_level(LevelFilter::Warn).init();
+    let args: Vec<String> = env::args().collect();
+
+    env_logger::Builder::new().filter_level(LevelFilter::Info).init();
+
+    let default_script_path = format!("{}/prime_2.bf", SCRIPT_FOLDER);
+    let program_path = if args.len() > 1 {
+        Path::new(args[1].as_str())
+    } else {
+        Path::new(default_script_path.as_str())
+    };
 
     info!("Execute BrainFuck script!");
-    let result = interpret_script_file(format!("{}/prime_2.bf", SCRIPT_FOLDER).as_str());
+    let result = interpret_script_file(program_path.to_str().unwrap());
     match result {
         Ok(_) => {
             info!("Success!");

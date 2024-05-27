@@ -43,6 +43,7 @@ impl<'a> Runtime<'a> {
     }
 
     pub fn dump_data(&self, exit: bool) {
+        println!("\nToo much instructions executed.\n");
         let data: String = self.extract_data().iter().map(|x| format!("{} ", x)).collect();
         println!("Data:\nCurrent pointer: {}\n{}\n", self.ptr, data);
         if exit {
@@ -104,10 +105,12 @@ impl<'a> Runtime<'a> {
     pub fn get_char(&mut self) -> Result<(), String> {
         if self.read_cursor >= self.read_buffer.len() {
             let mut buffer = String::new();
+
             let result = self.stdin.read_line(&mut buffer);
             if result.is_err() {
                 return Err(result.err().unwrap().to_string());
             }
+
             buffer = buffer.replace('\r', "");
             let mut vec = buffer.as_bytes().to_vec();
             vec.push(0);

@@ -2,7 +2,7 @@
 
 fn internal_syntax_check(ast: &Ast, parent_index: usize) -> Result<(), String> {
     let parent_node = ast.data.get(parent_index).unwrap();
-    
+
     if parent_node.sub_assets_indexes.is_empty() {
         return Err("Error, loop empty. It creates an infinite loop.".to_string());
     }
@@ -21,7 +21,7 @@ fn internal_syntax_check(ast: &Ast, parent_index: usize) -> Result<(), String> {
             let formatted = format!("Invalid branch at {}. This should not happen", node.index_in_string);
             return Err(formatted);
         }
-        
+
         internal_syntax_check(ast, *sub_node_index)?;
 
         sub_index += 1;
@@ -46,5 +46,8 @@ fn internal_syntax_check(ast: &Ast, parent_index: usize) -> Result<(), String> {
 }
 
 pub fn syntax_check(ast: &Ast) -> Result<(), String> {
+    if ast.data.len() == 1 {
+        return Ok(());
+    }
     internal_syntax_check(ast, 0)
 }
