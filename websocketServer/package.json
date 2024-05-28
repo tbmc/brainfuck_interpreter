@@ -5,12 +5,14 @@
   "dependencies": {
     "@types/tmp": "^0.2.6",
     "dotenv": "^16.0.3",
+    "http-proxy": "^1.18.1",
     "tmp": "^0.2.3",
     "ws": "^8.17.0"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
     "@types/figlet": "^1.5.5",
+    "@types/http-proxy": "^1.17.14",
     "@types/inquirer": "^9.0.3",
     "@types/node": "^18.11.18",
     "@types/ws": "^8.5.10",
