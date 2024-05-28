@@ -5,8 +5,5 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: brain_fuck_interpreter
-    volumes:
-      - ./exec_all:/app/exec_all
     ports:
-      - "3000:3000"
-      - "3001:3001"
+      - "3000:3001"
