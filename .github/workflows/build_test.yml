@@ -26,7 +26,7 @@ jobs:
       - name: lint
         working-directory: ./websocketServer
         run: |
-          prettier --check src test
+          yarn prettier-check
           yarn lint
 
   build_svelte:
@@ -43,6 +43,9 @@ jobs:
       - name: yarn install
         working-directory: ./svelte
         run: yarn install --frozen-lockfile
+      - name: svelte-check
+        working-directory: ./svelte
+        run: yarn check
       - name: lint
         working-directory: ./svelte
         run: yarn lint

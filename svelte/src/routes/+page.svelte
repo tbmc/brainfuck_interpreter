@@ -19,11 +19,15 @@
 
 	let sendDataFn: null | ((data: string) => void) = null;
 	const onExecuteClick = () => {
-		sendDataFn = connectWebsocket(currentCodeText, (data: string) => {
-			outputText.value += data;
-		}, () => {
-			outputText.value += '\n\nProgram ended.\n\n';
-		});
+		sendDataFn = connectWebsocket(
+			currentCodeText,
+			(data: string) => {
+				outputText.value += data;
+			},
+			() => {
+				outputText.value += '\n\nProgram ended.\n\n';
+			}
+		);
 	};
 
 	const onScriptChange = (value: string) => {
