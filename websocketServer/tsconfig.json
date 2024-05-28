@@ -1,0 +1,19 @@
+{
+    "include": ["src/**/*", "test/**/*"],
+    "compilerOptions": {
+        "rootDir": "src",
+        "outDir": "bin",
+        "strict": true,
+        "target": "ES6",
+        "module": "CommonJS",
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "types": ["vitest/globals"],
+        "paths": {
+            "#shared": ["../svelte/lib/shared"],
+            "#shared/*": ["../svelte/lib/shared/*"]
+        }
+    }
+}
