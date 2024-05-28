@@ -1,0 +1,7 @@
+﻿svelte/node_modules/*
+websocketServer/node_modules/*
+.idea/*
+svelte/.idea/*
+websocketServer/.idea/*
+
+target/*
