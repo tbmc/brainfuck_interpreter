@@ -49,6 +49,7 @@
 
 <nav>
 	<span>
+		<div class="title">Brainfuck interpreter</div>
 		<ListScriptsComponent onChange={onScriptChange} />
 		<button type="button" on:click={onExecuteClick}>Execute</button>
 	</span>
@@ -85,8 +86,17 @@
 		margin-left: auto;
 		margin-right: auto;
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: 1fr 1fr 1fr;
 		gap: 10px;
+	}
+
+	nav span .title {
+			font-weight: bold;
+			font-size: 1.5em;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 	}
 
 	.root-container {
