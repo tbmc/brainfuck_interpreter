@@ -37,8 +37,8 @@ export const connectWebsocket = (
 		}
 	};
 
-	const hostname = window.location.hostname;
-	socket = new WebSocket(`ws://${hostname}:3001/`);
+	const host = window.location.host;
+	socket = new WebSocket(`ws://${host}/`);
 	socket.addEventListener('open', onOpen);
 	socket.addEventListener('message', onMessage);
 
