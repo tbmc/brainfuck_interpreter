@@ -1,5 +1,6 @@
 ﻿# Brain Fuck Interpreter
 
+## Intro
 What is [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck)?
 
 A simple BrainFuck interpreter developed in Rust.
@@ -7,7 +8,7 @@ A simple BrainFuck interpreter developed in Rust.
 You can access it here:
 https://brainfuck_interpreter.tbmc.ovh/
 
-
+## Example
 Hello world in BrainFuck:
 
 ```brainfuck
@@ -60,3 +61,10 @@ Case : Valeur
 >                      va à la case 4
 .                      imprime le caractère '\n'(nouvelle ligne) (10)
 ```
+
+## Dev
+
+Install rust exec before running server
+``bash
+cargo install --path .
+``

@@ -5,7 +5,7 @@ use crate::runtime::Runtime;
 use crate::syntax_checker::syntax_check;
 
 pub fn interpret_script_file(filename: &str) -> Result<(), String> {
-    let content = fs::read_to_string(filename).expect("This should not fail! May be file does not exist!");
+    let content = fs::read_to_string(filename).expect("File does not exist!");
     return interpret_code(content.as_str());
 }
 

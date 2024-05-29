@@ -14,9 +14,7 @@ import type {
 import { server } from './proxy';
 
 function getExecutable(): string {
-    return process.platform === 'win32'
-        ? 'brain_fuck_interpreter.exe'
-        : 'brain_fuck_interpreter';
+    return 'brainfuck_interpreter';
 }
 
 export function runWebSocketServer() {

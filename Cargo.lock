@@ -61,7 +61,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "brain_fuck_interpreter"
+name = "brainfuck_interpreter"
 version = "0.1.0"
 dependencies = [
  "env_logger",
