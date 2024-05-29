@@ -5,3 +5,5 @@ svelte/.idea/*
 websocketServer/.idea/*
 
 target/*
+
+*.tar
