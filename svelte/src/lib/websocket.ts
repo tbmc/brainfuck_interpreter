@@ -41,7 +41,8 @@ export const connectWebsocket = (
 	const websocketProtocol = protocol.includes('https') ? 'wss' : 'ws';
 	const host = window.location.host;
 	const port = window.location.port;
-	socket = new WebSocket(`${websocketProtocol}://${host}:${port}/`);
+	socket = new WebSocket(`${websocketProtocol}://${hostname}:${port}/`);
+	console.log(`${websocketProtocol}://${hostname}:${port}/`, socket);
 	socket.addEventListener('open', onOpen);
 	socket.addEventListener('message', onMessage);
 
