@@ -23,54 +23,63 @@ export function runWebSocketServer() {
     const wss = new WebSocketServer({ server });
 
     wss.on('connection', (ws: WebSocket) => {
-        const tmpObj = tmp.fileSync();
-        let command: ChildProcessWithoutNullStreams | null = null;
-        const handleFirstMessage = (ws: WebSocket, code: string) => {
-            fs.writeFileSync(tmpObj.name, code);
-            fs.writeFileSync('./tmp.bf', code);
+        try {
+            const tmpObj = tmp.fileSync();
+            let command: ChildProcessWithoutNullStreams | null = null;
+            const handleFirstMessage = (ws: WebSocket, code: string) => {
+                fs.writeFileSync(tmpObj.name, code);
+                fs.writeFileSync('./tmp.bf', code);
 
-            command = spawn(getExecutable(), [tmpObj.name], {
-                cwd: '..',
-            });
-            command.stdout.on('data', (data) => {
-                const toSend: WebSocketOutputMessages = {
-                    output: data.toString(),
-                    closed: false,
-                };
-                ws.send(JSON.stringify(toSend));
-                // process.stdout.write(data.toString());
-            });
-            command.stderr.on('data', (data) => {
-                // console.error('Error:', data.toString());
-            });
-            command.on('close', () => {
-                const toSend: WebSocketOutputMessages = {
-                    output: '',
-                    closed: true,
-                };
-                ws.send(JSON.stringify(toSend));
-                tmpObj.removeCallback();
-            });
-        };
-        const handleNextMessages = (input: string) => {
-            if (command === null) throw new Error('Should not happen');
+                command = spawn(getExecutable(), [tmpObj.name], {
+                    cwd: '..',
+                });
+                command.stdout.on('data', (data) => {
+                    const toSend: WebSocketOutputMessages = {
+                        output: data.toString(),
+                        closed: false,
+                    };
+                    ws.send(JSON.stringify(toSend));
+                    // process.stdout.write(data.toString());
+                });
+                command.stderr.on('data', (data) => {
+                    // console.error('Error:', data.toString());
+                });
+                command.on('close', () => {
+                    const toSend: WebSocketOutputMessages = {
+                        output: '',
+                        closed: true,
+                    };
+                    ws.send(JSON.stringify(toSend));
+                    tmpObj.removeCallback();
+                });
+            };
+            const handleNextMessages = (input: string) => {
+                if (command === null) throw new Error('Should not happen');
 
-            command.stdin.write(input);
-        };
+                command.stdin.write(input);
+            };
 
-        ws.on('open', () => {
-            console.info('New connection');
-        });
+            ws.on('open', () => {
+                console.info('New connection');
+            });
 
-        ws.on('message', (message: Buffer) => {
-            const data = JSON.parse(
-                message.toString()
-            ) as WebSocketInputMessage;
-            // console.debug('New message', data);
-            if (data.isFirstMessage)
-                handleFirstMessage(ws, (data as WebSocketFirstMessage).code);
-            else
-                handleNextMessages((data as WebSocketOtherInputMessages).input);
-        });
+            ws.on('message', (message: Buffer) => {
+                const data = JSON.parse(
+                    message.toString()
+                ) as WebSocketInputMessage;
+                // console.debug('New message', data);
+                if (data.isFirstMessage)
+                    handleFirstMessage(
+                        ws,
+                        (data as WebSocketFirstMessage).code
+                    );
+                else
+                    handleNextMessages(
+                        (data as WebSocketOtherInputMessages).input
+                    );
+            });
+        } catch (err) {
+            console.error(err);
+        }
     });
 }
