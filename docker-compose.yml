@@ -1,9 +1,10 @@
 ﻿version: "3"
 services:
-  brain_fuck_interpreter:
+  brainfuck_interpreter:
+    image: brainfuck_interpreter
+    container_name: brainfuck_interpreter
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: brain_fuck_interpreter
     ports:
       - "3000:3001"
