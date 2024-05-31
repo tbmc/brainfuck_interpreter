@@ -1,14 +1,14 @@
 ﻿# Brain Fuck Interpreter
 
 ## Intro
-What is [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck)?
 
-A simple BrainFuck interpreter developed in Rust.
+What is [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck)?
 
 You can access it here:
 https://brainfuck_interpreter.tbmc.ovh/
 
 ## Example
+
 Hello world in BrainFuck:
 
 ```brainfuck
@@ -61,6 +61,16 @@ Case : Valeur
 >                      va à la case 4
 .                      imprime le caractère '\n'(nouvelle ligne) (10)
 ```
+
+## Rust
+
+A simple BrainFuck interpreter developed in Rust.
+It is in folder `rust`.
+
+## Golang
+
+An implementation of the interpreter is done in Go.
+The Go implementation is 3x faster than the Rust implementation.
 
 ## Dev
 
