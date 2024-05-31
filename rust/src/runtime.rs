@@ -1,6 +1,6 @@
 ﻿use std::io::{BufRead, Write};
 
-const MAX_INSTRUCTIONS: usize = 100_000_000;
+const MAX_INSTRUCTIONS: usize = 5_000_000_000;
 const ARRAY_SIZE: usize = 30_000;
 
 type BoxType = u8;

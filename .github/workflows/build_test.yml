@@ -60,10 +60,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
+        working-directory: ./rust
         run: cargo build
       - name: Run clippy
+        working-directory: ./rust
         run: cargo clippy --all-targets --all-features
       - name: Run tests
+        working-directory: ./rust
         run: cargo test --all-targets --all-features
 
   build_and_publish:

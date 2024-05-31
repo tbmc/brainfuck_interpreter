@@ -104,6 +104,7 @@ fn execute_leaf(runtime: &mut Runtime, ast: &Ast, index: usize) -> Result<(), St
             runtime.get_char()?;
         }
         _ => {
+            // todo: check this
             // Char is a comment, so it is ignored
         }
     }
@@ -114,6 +115,16 @@ fn execute_leaf(runtime: &mut Runtime, ast: &Ast, index: usize) -> Result<(), St
 mod tests {
     use std::io::Write;
     use super::*;
+
+    #[test]
+    fn test_no_instruction() {
+        let stdin = &mut io::stdin().lock();
+        let mut stdout: Vec<u8> = Vec::new();
+        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
+
+        let code = "test";
+        interpret_code_custom_runtime(code, runtime).unwrap();
+    }
 
     #[test]
     fn test_simple_operators_3_1() {
@@ -206,18 +217,6 @@ mod test_scripts {
         interpret_code_custom_runtime(file_content.as_str(), runtime).unwrap();
     }
 
-    #[test]
-    fn test_no_instruction() {
-        init();
-        
-        let stdin = &mut io::stdin().lock();
-        let mut stdout: Vec<u8> = Vec::new();
-        let runtime = &mut Runtime::new(stdin, &mut stdout as &mut dyn Write);
-        
-        let code = "test";
-        interpret_code_custom_runtime(code, runtime).unwrap();
-    }
-    
     #[test]
     fn test_no_loop() {
         init();
