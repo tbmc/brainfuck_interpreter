@@ -3,7 +3,7 @@
 WORKDIR /usr/src/brainfuck_interpreter
 COPY . .
 
-RUN rustup target add x86_64-unknown-linux-musl \
+RUN cd rust && rustup target add x86_64-unknown-linux-musl \
     && cargo install --target=x86_64-unknown-linux-musl --path .
 
 FROM node:22.2.0-alpine as run
