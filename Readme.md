@@ -75,6 +75,6 @@ The Go implementation is 3x faster than the Rust implementation.
 ## Dev
 
 Install rust exec before running server
-``bash
+```bash
 cargo install --path .
-``
+```
