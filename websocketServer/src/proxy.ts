@@ -10,7 +10,6 @@ const proxy = httpProxy.createProxyServer({
     secure: false,
 });
 export const server = http.createServer((req, res) => {
-    // console.log(req.url);
     try {
         proxy.web(req, res);
     } catch (err) {
