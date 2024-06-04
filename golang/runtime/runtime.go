@@ -3,12 +3,11 @@ package runtime
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 )
 
 const ArraySize = 30_000
-const MaxInstructions = 5_000_000_000
+const MaxInstructions int64 = 5_000_000_000
 
 type Runtime struct {
 	ptr                int
@@ -20,7 +19,9 @@ type Runtime struct {
 	writer *bufio.Writer
 }
 
-func NewCustomRuntime(reader *bufio.Reader, writer *bufio.Writer) Runtime {
+func NewCustomRuntime(reader *bufio.Reader, writer *bufio.Writer,
+
+) Runtime {
 	data := make([]byte, ArraySize)
 	return Runtime{
 		0, data, 0, 0, reader, writer,
@@ -29,12 +30,13 @@ func NewCustomRuntime(reader *bufio.Reader, writer *bufio.Writer) Runtime {
 
 func New() Runtime {
 	return NewCustomRuntime(bufio.NewReader(os.Stdin), bufio.NewWriter(os.Stdout))
+
 }
 
 func (r *Runtime) incrementInstructionCounter() {
 	r.instructionCounter++
 
-	if r.instructionCounter > MaxInstructions {
+	if int64(r.instructionCounter) > MaxInstructions {
 		// todo: dump
 		panic("Max instructions exceeded")
 	}
@@ -85,7 +87,7 @@ func (r *Runtime) DecrementValue() {
 func (r *Runtime) PutChar() error {
 	char := r.data[r.ptr]
 
-	_, err := r.writer.WriteString(fmt.Sprintf("%c", char))
+	err := r.writer.WriteByte(char)
 	if err != nil {
 		return err
 	}
@@ -101,6 +103,7 @@ func (r *Runtime) PutChar() error {
 
 func (r *Runtime) GetChar() error {
 	byte_, err := r.reader.ReadByte()
+
 	if err != nil {
 		return err
 	}

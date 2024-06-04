@@ -1,31 +1,31 @@
 package main
 
 import (
-	"brainfuck/consts"
 	"brainfuck/interpreter"
+	"brainfuck/server"
 	"fmt"
 	"os"
+	"strings"
 )
-
-const defaultScriptPath = consts.ScriptPath + "/prime_2.bf"
 
 func main() {
 	fmt.Println("Brainfuck Interpreter")
 
-	var filePath string = defaultScriptPath
-	if len(os.Args) > 1 {
-		filePath = os.Args[1]
-	}
+	if len(os.Args) == 0 || strings.ToLower(os.Args[1]) == "serve" {
+		server.Serve(3001)
+	} else {
+		filePath := os.Args[1]
 
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		panic("File does not exists")
-	}
+		content, err := os.ReadFile(filePath)
+		if err != nil {
+			panic("File does not exists")
+		}
 
-	code := string(content)
+		code := string(content)
 
-	err = interpreter.InterpretCode(&code)
-	if err != nil {
-		panic("Error during execution: " + fmt.Sprintf("%v", err))
+		err = interpreter.InterpretCode(&code)
+		if err != nil {
+			panic("Error during execution: " + fmt.Sprintf("%v", err))
+		}
 	}
 }
