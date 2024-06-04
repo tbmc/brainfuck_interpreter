@@ -4,8 +4,14 @@
 
 What is [BrainFuck](https://en.wikipedia.org/wiki/Brainfuck)?
 
-You can access it here:
+You can access my Brainfuck interpreter here:
 https://brainfuck_interpreter.tbmc.ovh/
+
+## What is this project?
+
+Initially this project is a Brainfuck interpreter written in Rust.
+Now it is still a Brainfuck interpreter, but it is written in Go and the front is written in Svelte.
+Both communicate with websockets.
 
 ## Example
 
