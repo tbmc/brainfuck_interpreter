@@ -11,7 +11,7 @@ import (
 func main() {
 	fmt.Println("Brainfuck Interpreter")
 
-	if len(os.Args) == 0 || strings.ToLower(os.Args[1]) == "serve" {
+	if len(os.Args) < 2 || strings.ToLower(os.Args[1]) == "serve" {
 		server.Serve(3001)
 	} else {
 		filePath := os.Args[1]
