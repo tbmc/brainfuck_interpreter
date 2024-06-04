@@ -13,26 +13,6 @@ on:
       - "*.md"
 
 jobs:
-  lint_websocket:
-    name: Lint WebSocket
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.2.0'
-          check-latest: true
-      - name: yarn install
-        working-directory: ./websocketServer
-        run: yarn install --frozen-lockfile
-      - name: lint
-        working-directory: ./websocketServer
-        run: |
-          yarn prettier-check
-          yarn lint
-
   build_svelte:
     name: Build and lint Svelte
     runs-on: ubuntu-22.04

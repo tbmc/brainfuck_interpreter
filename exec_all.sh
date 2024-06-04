@@ -4,7 +4,6 @@
 cd svelte
 (node build) &
 cd ..
-cd websocketServer
-yarn start
+./brainfuck
 
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
