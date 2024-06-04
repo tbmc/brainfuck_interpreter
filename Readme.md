@@ -10,6 +10,7 @@ https://brainfuck_interpreter.tbmc.ovh/
 ## What is this project?
 
 Initially this project is a Brainfuck interpreter written in Rust.
+
 Now it is still a Brainfuck interpreter, but it is written in Go and the front is written in Svelte.
 Both communicate with websockets.
 
@@ -76,7 +77,7 @@ It is in folder `rust`.
 ## Golang
 
 An implementation of the interpreter is done in Go.
-The Go implementation is 3x faster than the Rust implementation.
+The Go implementation is 3x faster than the Rust implementation due to technical limitations in the implementation of the one written in Rust and that I am not a Rust expert.
 
 ## Dev
 
