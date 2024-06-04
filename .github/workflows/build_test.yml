@@ -74,7 +74,7 @@ jobs:
 
   build_and_publish:
     name: Build and publish image
-    needs: [lint_websocket, build_svelte, build_test_rust, build_test_golang]
+    needs: [build_svelte, build_test_rust, build_test_golang]
     if: github.event_name != 'pull_request'
     permissions:
       contents: read
