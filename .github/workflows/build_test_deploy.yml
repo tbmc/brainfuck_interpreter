@@ -130,5 +130,5 @@ jobs:
           port: ${{ secrets.SERVER_PORT || 22 }}
           script: |
             cd ${{ secrets.SERVER_FOLDER_PATH }}
-            docker compose pull ${{ secrets.DOCKER_SERVICE_NAME }}
+            docker compose pull --quiet ${{ secrets.DOCKER_SERVICE_NAME }}
             docker compose up -d ${{ secrets.DOCKER_SERVICE_NAME }}
