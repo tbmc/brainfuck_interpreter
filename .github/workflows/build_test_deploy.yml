@@ -43,8 +43,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Install curl & build essential to be compatible with nektos/act
-        run: apt-get update && apt-get install -y curl build-essential
+# Enable only if you use nektos/act
+#      - name: Install curl & build essential
+#        run: sudo apt-get update && sudo apt-get install -y curl build-essential
       - uses: actions-rust-lang/setup-rust-toolchain@v1.9.0
       - name: Install clippy
         run: rustup update && rustup component add clippy
