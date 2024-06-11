@@ -14,10 +14,10 @@ pub fn interpret_code(script: &str) -> Result<(), String> {
     let stdout = &mut io::stdout();
     let runtime = &mut Runtime::new(stdin, stdout);
 
-    return interpret_code_custom_runtime(script, runtime);
+    interpret_code_custom_runtime(script, runtime)
 }
 
-pub fn interpret_code_custom_runtime<'a>(script: &str, runtime: &mut Runtime) -> Result<(), String> {
+pub fn interpret_code_custom_runtime(script: &str, runtime: &mut Runtime) -> Result<(), String> {
     let ast = &parse_code(script)?;
     info!("Parsed ok.");
 

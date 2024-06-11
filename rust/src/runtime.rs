@@ -1,4 +1,5 @@
 ﻿use std::io::{BufRead, Write};
+use std::fmt::Write as FmtWrite;
 
 const MAX_INSTRUCTIONS: usize = 5_000_000_000;
 const ARRAY_SIZE: usize = 30_000;
@@ -44,7 +45,11 @@ impl<'a> Runtime<'a> {
 
     pub fn dump_data(&self, exit: bool) {
         println!("\nToo much instructions executed.\n");
-        let data: String = self.extract_data().iter().map(|x| format!("{} ", x)).collect();
+        let data = self.extract_data().iter().fold(String::new(), |mut output, b| {
+            let _ = write!(output, "{b}");
+            output
+        });
+        // let data: String = self.extract_data().iter().map(|x| format!("{} ", x)).collect();
         println!("Data:\nCurrent pointer: {}\n{}\n", self.ptr, data);
         if exit {
             std::process::exit(0);
